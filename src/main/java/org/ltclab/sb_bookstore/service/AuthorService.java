@@ -7,6 +7,7 @@ import org.ltclab.sb_bookstore.model.Author;
 import org.ltclab.sb_bookstore.repository.AuthorRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -34,8 +35,8 @@ public class AuthorService {
         return authors.stream().map(a -> mpr.map(a, AuthorDTO.class)).toList();
     }
 
-    public AuthorDTO getAuthor (long id) {
-        Author author = authorRepo.findById(id).orElseThrow();
+    public AuthorDTO getAuthor(long id) {
+        Author author = authorRepo.findById(id).orElse(null);
         return mpr.map(author, AuthorDTO.class);
     }
 
@@ -45,14 +46,20 @@ public class AuthorService {
             author = mpr.map(newAuthor, Author.class);
             author.setId(id);
             authorRepo.save(author);
+            return mpr.map(author, AuthorDTO.class);
+        } else {
+            return null;
         }
-        return mpr.map(author, AuthorDTO.class);
     }
 
     public AuthorDTO deleteAuthor(Long id) {
-        Author author = authorRepo.findById(id).orElseThrow();
-        authorRepo.delete(author);
-        return mpr.map(author, AuthorDTO.class);
+        Author author = authorRepo.findById(id).orElse(null);
+        if (author != null) {
+            authorRepo.delete(author);
+            return mpr.map(author, AuthorDTO.class);
+        } else {
+            return null;
+        }
     }
 
 }

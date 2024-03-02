@@ -19,11 +19,10 @@ public class Author {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Book> books = new ArrayList<>();
 
-    public boolean addBook (Book b) {
-        return books.add(b);
-    }
-
-    public boolean removeBook (Book b) {
-        return books.remove(b);
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder("\nBooks:\n");
+        books.forEach(b -> str.append(b.getTitle().indent(4)));
+        return "Author: " + fullName + str;
     }
 }
