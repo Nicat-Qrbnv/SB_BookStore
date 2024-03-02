@@ -10,7 +10,6 @@ public interface CategoryRepository extends CrudRepository<Category, Long> {
 
     boolean existsByCategoryName(String name);
     @Override
-    @SuppressWarnings("unchecked")
     <S extends Category> List<S> saveAll(Iterable<S> categories);
 
     default List<Category> saveAll (List<Category> categories) {
