@@ -3,7 +3,6 @@ package org.ltclab.sb_bookstore.controller;
 import lombok.RequiredArgsConstructor;
 import org.ltclab.sb_bookstore.dto.AuthorDTO;
 import org.ltclab.sb_bookstore.service.AuthorService;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +17,11 @@ public class AuthorController {
 
     @PostMapping("/add")
     public ResponseEntity<String> addAuthor (@RequestBody AuthorDTO authorDTO) {
-        try {
-            return ResponseEntity.ok(as.createAuthor(authorDTO));
-        } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.badRequest().body("Author already exists!");
+        String result = as.createAuthor(authorDTO);
+        if (result.equals("created")){
+            return ResponseEntity.ok("Author: %s is added!".formatted(authorDTO.getFullName()));
+        } else {
+            return ResponseEntity.ok("Author: %s exists!".formatted(authorDTO.getFullName()));
         }
     }
 
@@ -30,7 +30,7 @@ public class AuthorController {
         return as.getAllAuthors();
     }
 
-    @GetMapping("/author{id}")
+    @GetMapping("/only{id}")
     public AuthorDTO getAuthorById (@PathVariable Long id) {
         return as.getAuthor(id);
     }

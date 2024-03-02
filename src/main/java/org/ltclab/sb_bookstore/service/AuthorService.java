@@ -19,10 +19,13 @@ public class AuthorService {
 
     public String createAuthor(AuthorDTO authorDTO) {
 
-        Author author = mpr.map(authorDTO, Author.class);
-        authorRepo.save(author);
-
-        return "Author named: %s is created!".formatted(author.getFullName());
+        if (authorRepo.getAuthorByFullName(authorDTO.getFullName()).isEmpty()) {
+            Author author = mpr.map(authorDTO, Author.class);
+            authorRepo.save(author);
+            return "created";
+        } else {
+            return "exists";
+        }
     }
 
     public List<AuthorDTO> getAllAuthors() {
