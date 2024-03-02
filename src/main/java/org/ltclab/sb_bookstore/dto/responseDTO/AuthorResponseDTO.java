@@ -1,5 +1,7 @@
 package org.ltclab.sb_bookstore.dto.responseDTO;
 
+import org.ltclab.sb_bookstore.util.ListToString;
+
 import java.util.List;
 
 public class AuthorResponseDTO {
@@ -8,6 +10,6 @@ public class AuthorResponseDTO {
 
     @Override
     public String toString() {
-        return "Author: " + fullName;
+        return "Author: " + fullName + "\nBooks:\n" + ListToString.convert(books);
     }
 }
