@@ -26,22 +26,44 @@ public class AuthorController {
     }
 
     @GetMapping("/all")
-    public List<AuthorDTO> getAllAuthors() {
-        return as.getAllAuthors();
+    public ResponseEntity<StringBuilder> getAllAuthors() {
+        List<AuthorDTO> allAuthors = as.getAllAuthors();
+        if (allAuthors.isEmpty()) {
+            return ResponseEntity.ok(new StringBuilder("No author found!"));
+        } else {
+            StringBuilder str = new StringBuilder("Found Authors:\n");
+            allAuthors.forEach(a -> str.append(a.toString().indent(4)));
+            return ResponseEntity.ok (str);
+        }
     }
 
     @GetMapping("/only{id}")
-    public AuthorDTO getAuthorById (@PathVariable Long id) {
-        return as.getAuthor(id);
+    public String getAuthorById (@PathVariable Long id) {
+        AuthorDTO authorDTO = as.getAuthor(id);
+        if (authorDTO == null) {
+            return "No author with %d ID is present!".formatted(id);
+        } else {
+            return authorDTO.toString();
+        }
     }
 
     @PutMapping("/update")
-    public AuthorDTO updateAuthor(@RequestParam Long id, @RequestBody AuthorDTO newAuthor) {
-        return as.updateAuthor(id, newAuthor);
+    public String updateAuthor(@RequestParam Long id, @RequestBody AuthorDTO newAuthor) {
+        AuthorDTO authorDTO = as.updateAuthor(id, newAuthor);
+        if (authorDTO == null) {
+            return "No author with %d ID is present!".formatted(id);
+        } else {
+            return authorDTO.toString();
+        }
     }
 
     @DeleteMapping("/delete{id}")
-    public AuthorDTO deleteAuthor(@PathVariable Long id) {
-        return as.deleteAuthor(id);
+    public String deleteAuthor(@PathVariable Long id) {
+        AuthorDTO authorDTO = as.deleteAuthor(id);
+        if (authorDTO == null) {
+            return "No author with %d ID is present!".formatted(id);
+        } else {
+            return authorDTO.toString();
+        }
     }
 }
