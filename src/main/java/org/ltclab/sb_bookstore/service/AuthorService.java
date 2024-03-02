@@ -2,7 +2,7 @@ package org.ltclab.sb_bookstore.service;
 
 import lombok.RequiredArgsConstructor;
 
-import org.ltclab.sb_bookstore.dto.AuthorDTO;
+import org.ltclab.sb_bookstore.dto.requestDTO.AuthorRequestDTO;
 import org.ltclab.sb_bookstore.model.Author;
 import org.ltclab.sb_bookstore.repository.AuthorRepository;
 import org.modelmapper.ModelMapper;
@@ -18,10 +18,10 @@ public class AuthorService {
 
     private final ModelMapper mpr;
 
-    public String createAuthor(AuthorDTO authorDTO) {
+    public String createAuthor(AuthorRequestDTO authorRequestDTO) {
 
-        if (authorRepo.getAuthorByFullName(authorDTO.getFullName()).isEmpty()) {
-            Author author = mpr.map(authorDTO, Author.class);
+        if (authorRepo.getAuthorByFullName(authorRequestDTO.getFullName()).isEmpty()) {
+            Author author = mpr.map(authorRequestDTO, Author.class);
             authorRepo.save(author);
             return "created";
         } else {
@@ -29,34 +29,34 @@ public class AuthorService {
         }
     }
 
-    public List<AuthorDTO> getAllAuthors() {
+    public List<AuthorRequestDTO> getAllAuthors() {
         List<Author> authors = authorRepo.findAll();
 
-        return authors.stream().map(a -> mpr.map(a, AuthorDTO.class)).toList();
+        return authors.stream().map(a -> mpr.map(a, AuthorRequestDTO.class)).toList();
     }
 
-    public AuthorDTO getAuthor(long id) {
+    public AuthorRequestDTO getAuthor(long id) {
         Author author = authorRepo.findById(id).orElse(null);
-        return mpr.map(author, AuthorDTO.class);
+        return mpr.map(author, AuthorRequestDTO.class);
     }
 
-    public AuthorDTO updateAuthor(Long id, AuthorDTO newAuthor) {
+    public AuthorRequestDTO updateAuthor(Long id, AuthorRequestDTO newAuthor) {
         Author author = authorRepo.findById(id).orElse(null);
         if (author != null) {
             author = mpr.map(newAuthor, Author.class);
             author.setId(id);
             authorRepo.save(author);
-            return mpr.map(author, AuthorDTO.class);
+            return mpr.map(author, AuthorRequestDTO.class);
         } else {
             return null;
         }
     }
 
-    public AuthorDTO deleteAuthor(Long id) {
+    public AuthorRequestDTO deleteAuthor(Long id) {
         Author author = authorRepo.findById(id).orElse(null);
         if (author != null) {
             authorRepo.delete(author);
-            return mpr.map(author, AuthorDTO.class);
+            return mpr.map(author, AuthorRequestDTO.class);
         } else {
             return null;
         }

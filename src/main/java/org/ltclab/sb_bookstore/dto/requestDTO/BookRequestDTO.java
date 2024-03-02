@@ -1,11 +1,11 @@
-package org.ltclab.sb_bookstore.dto;
+package org.ltclab.sb_bookstore.dto.requestDTO;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class BookDTO {
+public class BookRequestDTO {
     private String title;
     private List<String> categories;
     private int publicationYear;

@@ -2,7 +2,7 @@ package org.ltclab.sb_bookstore.controller;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.ltclab.sb_bookstore.dto.BookDTO;
+import org.ltclab.sb_bookstore.dto.requestDTO.BookRequestDTO;
 import org.ltclab.sb_bookstore.service.BookService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class BookController {
     private final BookService bs;
 
     @PostMapping("/add")
-    public ResponseEntity<String> addBook (@RequestBody BookDTO bkDTO) {
+    public ResponseEntity<String> addBook (@RequestBody BookRequestDTO bkDTO) {
         try {
             String result = bs.createBook(bkDTO);
             return ResponseEntity.ok(result);
@@ -28,18 +28,18 @@ public class BookController {
     }
 
     @GetMapping("/all")
-    public List<BookDTO> getAllBooks() {
+    public List<BookRequestDTO> getAllBooks() {
         return bs.getAllBooks();
     }
 
     @GetMapping("/bk{id}")
-    public BookDTO getBookById (@PathVariable Long id) {
+    public BookRequestDTO getBookById (@PathVariable Long id) {
         return bs.getBook(id);
     }
 
 
     @PutMapping("/update")
-    public BookDTO updateBook(@RequestParam Long id, @RequestBody BookDTO newBook) {
+    public BookRequestDTO updateBook(@RequestParam Long id, @RequestBody BookRequestDTO newBook) {
         return bs.updateBook(id, newBook);
     }
 

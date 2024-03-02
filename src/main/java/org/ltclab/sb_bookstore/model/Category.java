@@ -9,7 +9,7 @@ import java.util.List;
 @Table(name = "category")
 @Data
 @RequiredArgsConstructor
-public class Category {
+public class Category implements StoreElement{
     @Column (unique = true)
     private String categoryName;
 

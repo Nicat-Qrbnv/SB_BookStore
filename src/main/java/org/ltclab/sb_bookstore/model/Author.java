@@ -10,12 +10,13 @@ import java.util.List;
 @Entity
 @Table(name = "author")
 @Data
-public class Author {
+public class Author implements StoreElement{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column (unique = true)
     private String fullName;
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Book> books = new ArrayList<>();
 

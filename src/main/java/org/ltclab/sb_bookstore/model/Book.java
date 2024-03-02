@@ -12,7 +12,7 @@ import java.util.Objects;
 @Table (name = "book",
         uniqueConstraints = @UniqueConstraint(columnNames = {"title", "author_id"}))
 @Data
-public class Book {
+public class Book implements StoreElement{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

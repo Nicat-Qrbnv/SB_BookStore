@@ -3,7 +3,7 @@ package org.ltclab.sb_bookstore.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ltclab.sb_bookstore.dto.BookDTO;
+import org.ltclab.sb_bookstore.dto.requestDTO.BookRequestDTO;
 import org.ltclab.sb_bookstore.model.Author;
 import org.ltclab.sb_bookstore.model.Book;
 import org.ltclab.sb_bookstore.model.Category;
@@ -27,34 +27,34 @@ public class BookService {
 
     private final ModelMapper mpr;
 
-    public String createBook(BookDTO bookDTO) {
+    public String createBook(BookRequestDTO bookRequestDTO) {
 
-        Author author = getOrCreateAuthor(bookDTO);
-        Book book = searchBook(bookDTO, author);
+        Author author = getOrCreateAuthor(bookRequestDTO);
+        Book book = searchBook(bookRequestDTO, author);
         if (book != null) {
             throw new DataIntegrityViolationException("Book already exists!");
         }
-        book = mpr.map(bookDTO, Book.class);
+        book = mpr.map(bookRequestDTO, Book.class);
         book.setAuthor(author);
 
-        book.setCategories(searchCategories(bookDTO));
+        book.setCategories(searchCategories(bookRequestDTO));
         bookRepo.save(book);
 
-        return "Book created:\n\t" + mpr.map(book, BookDTO.class);
+        return "Book created:\n\t" + mpr.map(book, BookRequestDTO.class);
     }
 
-    public List<BookDTO> getAllBooks() {
+    public List<BookRequestDTO> getAllBooks() {
         List<Book> books = bookRepo.findAll();
 
-        return books.stream().map(b -> mpr.map(b, BookDTO.class)).toList();
+        return books.stream().map(b -> mpr.map(b, BookRequestDTO.class)).toList();
     }
 
-    public BookDTO getBook(long id) {
+    public BookRequestDTO getBook(long id) {
         Book book = bookRepo.findById(id).orElseThrow();
-        return mpr.map(book, BookDTO.class);
+        return mpr.map(book, BookRequestDTO.class);
     }
 
-    public BookDTO updateBook(Long id, BookDTO newBook) {
+    public BookRequestDTO updateBook(Long id, BookRequestDTO newBook) {
 
         Book book = bookRepo.findById(id).orElse(null);
         if (book != null) {
@@ -65,39 +65,39 @@ public class BookService {
             book.setAuthor(author);
             bookRepo.save(book);
         }
-        return mpr.map(book, BookDTO.class);
+        return mpr.map(book, BookRequestDTO.class);
     }
 
-    public BookDTO deleteBook(Long id) {
+    public BookRequestDTO deleteBook(Long id) {
         log.info("Searching for book with id: " + id);
         Book book = bookRepo.findById(id).orElse(null);
         if (book != null) {
             log.info("Book found: " + book);
             bookRepo.delete(book);
             log.info("Deleted");
-            return mpr.map(book, BookDTO.class);
+            return mpr.map(book, BookRequestDTO.class);
         } else {
             log.error("Book not found!");
             throw new EntityNotFoundException("Book does not exist!");
         }
     }
 
-    private Book searchBook(BookDTO bookDTO, Author author) {
-        log.info("Searching for Book {title: %s | author: %s}".formatted(bookDTO.getTitle(), bookDTO.getAuthorFullName()));
-        return bookRepo.findByTitleAndAuthor(bookDTO.getTitle(), author).orElse(null);
+    private Book searchBook(BookRequestDTO bookRequestDTO, Author author) {
+        log.info("Searching for Book {title: %s | author: %s}".formatted(bookRequestDTO.getTitle(), bookRequestDTO.getAuthorFullName()));
+        return bookRepo.findByTitleAndAuthor(bookRequestDTO.getTitle(), author).orElse(null);
     }
 
-    private List<Category> searchCategories(BookDTO bookDTO) {
-        List<Category> categories = bookDTO.getCategories().stream().map(Category::new).toList();
+    private List<Category> searchCategories(BookRequestDTO bookRequestDTO) {
+        List<Category> categories = bookRequestDTO.getCategories().stream().map(Category::new).toList();
         return ctgryRepo.saveAll(categories);
     }
 
-    private Author getOrCreateAuthor(BookDTO bookDTO) {
-        log.info("Searching for Author {name: %s}".formatted(bookDTO.getAuthorFullName()));
-        Author author = authorRepo.getAuthorByFullName(bookDTO.getAuthorFullName()).orElse(null);
+    private Author getOrCreateAuthor(BookRequestDTO bookRequestDTO) {
+        log.info("Searching for Author {name: %s}".formatted(bookRequestDTO.getAuthorFullName()));
+        Author author = authorRepo.getAuthorByFullName(bookRequestDTO.getAuthorFullName()).orElse(null);
         if (author == null) {
             log.info("Author is not found. Creating author");
-            author = mpr.map(bookDTO, Author.class);
+            author = mpr.map(bookRequestDTO, Author.class);
             log.info("Author mapped");
             authorRepo.save(author);
             log.info(author + " is saved");

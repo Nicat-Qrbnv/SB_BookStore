@@ -1,7 +1,7 @@
 package org.ltclab.sb_bookstore.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.ltclab.sb_bookstore.dto.AuthorDTO;
+import org.ltclab.sb_bookstore.dto.requestDTO.AuthorRequestDTO;
 import org.ltclab.sb_bookstore.service.AuthorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,18 +16,18 @@ public class AuthorController {
     private final AuthorService as;
 
     @PostMapping("/add")
-    public ResponseEntity<String> addAuthor (@RequestBody AuthorDTO authorDTO) {
-        String result = as.createAuthor(authorDTO);
+    public ResponseEntity<String> addAuthor (@RequestBody AuthorRequestDTO authorRequestDTO) {
+        String result = as.createAuthor(authorRequestDTO);
         if (result.equals("created")){
-            return ResponseEntity.ok("Author: %s is added!".formatted(authorDTO.getFullName()));
+            return ResponseEntity.ok("Author: %s is added!".formatted(authorRequestDTO.getFullName()));
         } else {
-            return ResponseEntity.ok("Author: %s exists!".formatted(authorDTO.getFullName()));
+            return ResponseEntity.ok("Author: %s exists!".formatted(authorRequestDTO.getFullName()));
         }
     }
 
     @GetMapping("/all")
     public ResponseEntity<StringBuilder> getAllAuthors() {
-        List<AuthorDTO> allAuthors = as.getAllAuthors();
+        List<AuthorRequestDTO> allAuthors = as.getAllAuthors();
         if (allAuthors.isEmpty()) {
             return ResponseEntity.ok(new StringBuilder("No author found!"));
         } else {
@@ -39,31 +39,31 @@ public class AuthorController {
 
     @GetMapping("/only{id}")
     public String getAuthorById (@PathVariable Long id) {
-        AuthorDTO authorDTO = as.getAuthor(id);
-        if (authorDTO == null) {
+        AuthorRequestDTO authorRequestDTO = as.getAuthor(id);
+        if (authorRequestDTO == null) {
             return "No author with %d ID is present!".formatted(id);
         } else {
-            return authorDTO.toString();
+            return authorRequestDTO.toString();
         }
     }
 
     @PutMapping("/update")
-    public String updateAuthor(@RequestParam Long id, @RequestBody AuthorDTO newAuthor) {
-        AuthorDTO authorDTO = as.updateAuthor(id, newAuthor);
-        if (authorDTO == null) {
+    public String updateAuthor(@RequestParam Long id, @RequestBody AuthorRequestDTO newAuthor) {
+        AuthorRequestDTO authorRequestDTO = as.updateAuthor(id, newAuthor);
+        if (authorRequestDTO == null) {
             return "No author with %d ID is present!".formatted(id);
         } else {
-            return authorDTO.toString();
+            return authorRequestDTO.toString();
         }
     }
 
     @DeleteMapping("/delete{id}")
     public String deleteAuthor(@PathVariable Long id) {
-        AuthorDTO authorDTO = as.deleteAuthor(id);
-        if (authorDTO == null) {
+        AuthorRequestDTO authorRequestDTO = as.deleteAuthor(id);
+        if (authorRequestDTO == null) {
             return "No author with %d ID is present!".formatted(id);
         } else {
-            return authorDTO.toString();
+            return authorRequestDTO.toString();
         }
     }
 }
