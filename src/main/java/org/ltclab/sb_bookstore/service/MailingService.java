@@ -30,7 +30,7 @@ public class MailingService {
         MimeMessageHelper mmh = new MimeMessageHelper(msg, true);
 
         mmh.setFrom("test@gmail.com");
-        mmh.setTo("nicat.qurbanov97@gmail.com");
+        mmh.setTo("shibliyevmurad@gmail.com");
         mmh.setSubject("Testing");
         mmh.setText("Don't open the file");
         mmh.addAttachment("DontRead.ME", new ClassPathResource("DontRead.ME"));

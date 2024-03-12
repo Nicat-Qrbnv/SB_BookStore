@@ -17,6 +17,10 @@ configurations {
     }
 }
 
+ext {
+    set('springCloudVersion', "Hoxton.SR1")
+}
+
 repositories {
     mavenCentral()
 }
@@ -42,7 +46,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.3'
 
-
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.0'
 }
 
 tasks.named('test') {

@@ -3,7 +3,9 @@ package org.ltclab.sb_bookstore.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ltclab.sb_bookstore.client.GoodReadsClient;
 import org.ltclab.sb_bookstore.dto.requestDTO.BookRequestDTO;
+import org.ltclab.sb_bookstore.dto.responseDTO.BookResponseDTO;
 import org.ltclab.sb_bookstore.model.Author;
 import org.ltclab.sb_bookstore.model.Book;
 import org.ltclab.sb_bookstore.model.Category;
@@ -14,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.time.Year;
 import java.util.List;
 
 @Slf4j
@@ -21,9 +24,13 @@ import java.util.List;
 @Service
 public class BookService {
 
+    private static final String API_HOST_HEADER_VALUE = "goodreads-books.p.rapidapi.com";
+    private static final String API_KEY = "43a2b5c1e7msh8acac68a5f0123bp16ce56jsn7851bc2a7814";
+
     private final BookRepository bookRepo;
     private final AuthorRepository authorRepo;
     private final CategoryRepository ctgryRepo;
+    private final GoodReadsClient grc;
 
     private final ModelMapper mpr;
 
@@ -36,6 +43,14 @@ public class BookService {
         }
         book = mpr.map(bookRequestDTO, Book.class);
         book.setAuthor(author);
+        if (book.getPublicationYear() == 0) {
+            int foundYear = findPublicationYear(bookRequestDTO);
+            if (foundYear > 0) {
+                book.setPublicationYear(foundYear);
+            } else {
+                book.setPublicationYear(Year.now().getValue());
+            }
+        }
 
         book.setCategories(searchCategories(bookRequestDTO));
         bookRepo.save(book);
@@ -103,5 +118,15 @@ public class BookService {
             log.info(author + " is saved");
         }
         return author;
+    }
+
+    private int findPublicationYear (BookRequestDTO bookDTO) {
+
+        BookResponseDTO bookResponseDTO = grc.searchBookInGoodReads(API_HOST_HEADER_VALUE, API_KEY, bookDTO.getTitle()).get(0);
+        if (bookResponseDTO != null) {
+            return bookResponseDTO.getPublicationYear();
+        } else {
+            return -1;
+        }
     }
 }
