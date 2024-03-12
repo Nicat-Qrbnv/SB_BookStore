@@ -10,12 +10,9 @@ import java.util.List;
 
 @FeignClient(name = "GoodReadsAPI", url = "https://goodreads-books.p.rapidapi.com")
 public interface GoodReadsClient {
-
-    String API_HOST_HEADER_NAME = "X-RapidAPI-Host";
-    String API_KEY_HEADER_NAME = "X-RapidAPI-Key";
     @GetMapping(value = "/search")
-    List<BookResponseDTO> searchBookInGoodReads(@RequestHeader(name = API_HOST_HEADER_NAME) String apiHostHeader,
-                                                @RequestHeader(name = API_KEY_HEADER_NAME) String apiKeyHeader,
+    List<BookResponseDTO> searchBookInGoodReads(@RequestHeader(name = "X-RapidAPI-Host") String apiHostHeader,
+                                                @RequestHeader(name = "X-RapidAPI-Key") String apiKeyHeader,
                                                 @RequestParam String q);
 
 

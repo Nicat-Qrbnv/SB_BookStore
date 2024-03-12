@@ -24,16 +24,22 @@ import java.util.List;
 @Service
 public class BookService {
 
+    //Static fields for methods calling Good Reads API
     private static final String API_HOST_HEADER_VALUE = "goodreads-books.p.rapidapi.com";
     private static final String API_KEY = "43a2b5c1e7msh8acac68a5f0123bp16ce56jsn7851bc2a7814";
 
+    //Repositories
     private final BookRepository bookRepo;
     private final AuthorRepository authorRepo;
     private final CategoryRepository ctgryRepo;
+
+    //injected feign client
     private final GoodReadsClient grc;
 
+    //mapper
     private final ModelMapper mpr;
 
+    //methods
     public String createBook(BookRequestDTO bookRequestDTO) {
 
         Author author = getOrCreateAuthor(bookRequestDTO);
@@ -96,6 +102,8 @@ public class BookService {
             throw new EntityNotFoundException("Book does not exist!");
         }
     }
+
+    //helper methods
 
     private Book searchBook(BookRequestDTO bookRequestDTO, Author author) {
         log.info("Searching for Book {title: %s | author: %s}".formatted(bookRequestDTO.getTitle(), bookRequestDTO.getAuthorFullName()));
