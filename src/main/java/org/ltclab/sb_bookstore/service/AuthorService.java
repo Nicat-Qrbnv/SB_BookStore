@@ -3,12 +3,15 @@ package org.ltclab.sb_bookstore.service;
 import lombok.RequiredArgsConstructor;
 
 import org.ltclab.sb_bookstore.dto.requestDTO.AuthorRequestDTO;
+import org.ltclab.sb_bookstore.dto.responseDTO.forAuthor.AuthorResponseDTO;
 import org.ltclab.sb_bookstore.model.Author;
 import org.ltclab.sb_bookstore.repository.AuthorRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -18,48 +21,41 @@ public class AuthorService {
 
     private final ModelMapper mpr;
 
-    public String createAuthor(AuthorRequestDTO authorRequestDTO) {
-
-        if (authorRepo.getAuthorByFullName(authorRequestDTO.getFullName()).isEmpty()) {
-            Author author = mpr.map(authorRequestDTO, Author.class);
+    public AuthorResponseDTO createAuthor(AuthorRequestDTO authorRequestDTO) {
+        Author author = authorRepo.findByFullName(authorRequestDTO.getFullName());
+        if (author == null) {
+            author = mpr.map(authorRequestDTO, Author.class);
             authorRepo.save(author);
-            return "created";
-        } else {
-            return "exists";
         }
+        return mpr.map(author, AuthorResponseDTO.class);
     }
 
-    public List<AuthorRequestDTO> getAllAuthors() {
+    public List<AuthorResponseDTO> getAllAuthors() {
         List<Author> authors = authorRepo.findAll();
-
-        return authors.stream().map(a -> mpr.map(a, AuthorRequestDTO.class)).toList();
+        return authors.stream().map(a -> mpr.map(a, AuthorResponseDTO.class)).toList();
     }
 
-    public AuthorRequestDTO getAuthor(long id) {
-        Author author = authorRepo.findById(id).orElse(null);
-        return mpr.map(author, AuthorRequestDTO.class);
+    public AuthorResponseDTO getAuthor(long id) {
+        Optional<Author> author = authorRepo.findById(id);
+        return mpr.map(author, AuthorResponseDTO.class);
     }
 
-    public AuthorRequestDTO updateAuthor(Long id, AuthorRequestDTO newAuthor) {
-        Author author = authorRepo.findById(id).orElse(null);
-        if (author != null) {
-            author = mpr.map(newAuthor, Author.class);
-            author.setId(id);
-            authorRepo.save(author);
-            return mpr.map(author, AuthorRequestDTO.class);
-        } else {
+    public AuthorResponseDTO updateAuthor(Long id, AuthorRequestDTO newAuthor) {
+        Optional<Author> found = authorRepo.findById(id);
+        found.ifPresent(f -> {
+            mpr.map(newAuthor, f);
+            f.setId(id);
+        });
+        try {
+            found.ifPresent(authorRepo::save);
+        } catch (DataIntegrityViolationException e) {
             return null;
         }
+
+        return mpr.map(found, AuthorResponseDTO.class);
     }
 
-    public AuthorRequestDTO deleteAuthor(Long id) {
-        Author author = authorRepo.findById(id).orElse(null);
-        if (author != null) {
-            authorRepo.delete(author);
-            return mpr.map(author, AuthorRequestDTO.class);
-        } else {
-            return null;
-        }
+    public void deleteAuthor(Long id) {
+        authorRepo.deleteById(id);
     }
-
 }

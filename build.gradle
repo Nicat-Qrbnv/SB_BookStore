@@ -47,6 +47,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.3'
 
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.0'
+
+    implementation 'org.jsoup:jsoup:1.17.2'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+
 }
 
 tasks.named('test') {

@@ -16,6 +16,4 @@ public interface BookRepository extends CrudRepository<Book, Long> {
     Optional<Book> findById(Long id);
 
     Optional<Book> findByTitleAndAuthor(String title, Author author);
-
-    boolean existsBookByTitleAndAuthor (String title, Author author);
 }

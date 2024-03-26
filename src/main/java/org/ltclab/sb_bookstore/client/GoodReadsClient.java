@@ -1,6 +1,6 @@
 package org.ltclab.sb_bookstore.client;
 
-import org.ltclab.sb_bookstore.dto.responseDTO.BookResponseDTO;
+import org.ltclab.sb_bookstore.dto.responseDTO.forBook.BookResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -14,6 +14,4 @@ public interface GoodReadsClient {
     List<BookResponseDTO> searchBookInGoodReads(@RequestHeader(name = "X-RapidAPI-Host") String apiHostHeader,
                                                 @RequestHeader(name = "X-RapidAPI-Key") String apiKeyHeader,
                                                 @RequestParam String q);
-
-
 }

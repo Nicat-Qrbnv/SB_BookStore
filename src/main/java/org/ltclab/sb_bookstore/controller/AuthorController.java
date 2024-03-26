@@ -2,7 +2,9 @@ package org.ltclab.sb_bookstore.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.ltclab.sb_bookstore.dto.requestDTO.AuthorRequestDTO;
+import org.ltclab.sb_bookstore.dto.responseDTO.forAuthor.AuthorResponseDTO;
 import org.ltclab.sb_bookstore.service.AuthorService;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,54 +18,31 @@ public class AuthorController {
     private final AuthorService as;
 
     @PostMapping("/add")
-    public ResponseEntity<String> addAuthor (@RequestBody AuthorRequestDTO authorRequestDTO) {
-        String result = as.createAuthor(authorRequestDTO);
-        if (result.equals("created")){
-            return ResponseEntity.ok("Author: %s is added!".formatted(authorRequestDTO.getFullName()));
-        } else {
-            return ResponseEntity.ok("Author: %s exists!".formatted(authorRequestDTO.getFullName()));
-        }
+    public ResponseEntity<AuthorResponseDTO> addAuthor(@RequestBody AuthorRequestDTO authorRequestDTO) {
+        AuthorResponseDTO result = as.createAuthor(authorRequestDTO);
+        return new ResponseEntity<>(result, HttpStatusCode.valueOf(202));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<StringBuilder> getAllAuthors() {
-        List<AuthorRequestDTO> allAuthors = as.getAllAuthors();
-        if (allAuthors.isEmpty()) {
-            return ResponseEntity.ok(new StringBuilder("No author found!"));
-        } else {
-            StringBuilder str = new StringBuilder("Found Authors:\n");
-            allAuthors.forEach(a -> str.append(a.toString().indent(4)));
-            return ResponseEntity.ok (str);
-        }
+    public ResponseEntity<List<AuthorResponseDTO>> getAllAuthors() {
+        List<AuthorResponseDTO> result = as.getAllAuthors();
+        return new ResponseEntity<>(result, HttpStatusCode.valueOf(202));
     }
 
-    @GetMapping("/only{id}")
-    public String getAuthorById (@PathVariable Long id) {
-        AuthorRequestDTO authorRequestDTO = as.getAuthor(id);
-        if (authorRequestDTO == null) {
-            return "No author with %d ID is present!".formatted(id);
-        } else {
-            return authorRequestDTO.toString();
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<AuthorResponseDTO> getAuthorById(@PathVariable Long id) {
+        var result = as.getAuthor(id);
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/update")
-    public String updateAuthor(@RequestParam Long id, @RequestBody AuthorRequestDTO newAuthor) {
-        AuthorRequestDTO authorRequestDTO = as.updateAuthor(id, newAuthor);
-        if (authorRequestDTO == null) {
-            return "No author with %d ID is present!".formatted(id);
-        } else {
-            return authorRequestDTO.toString();
-        }
+    public ResponseEntity<AuthorResponseDTO> updateAuthor(@RequestParam Long id, @RequestBody AuthorRequestDTO newAuthor) {
+        AuthorResponseDTO result = as.updateAuthor(id, newAuthor);
+        return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/delete{id}")
-    public String deleteAuthor(@PathVariable Long id) {
-        AuthorRequestDTO authorRequestDTO = as.deleteAuthor(id);
-        if (authorRequestDTO == null) {
-            return "No author with %d ID is present!".formatted(id);
-        } else {
-            return authorRequestDTO.toString();
-        }
+    @DeleteMapping("/{id}")
+    public void deleteAuthor(@PathVariable Long id) {
+        as.deleteAuthor(id);
     }
 }
