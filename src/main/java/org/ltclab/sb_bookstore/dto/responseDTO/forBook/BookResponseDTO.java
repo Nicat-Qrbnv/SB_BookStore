@@ -10,9 +10,10 @@ import java.util.List;
 @Data
 public class BookResponseDTO {
     private String title;
+    @JsonManagedReference
     private List<CategoryDTO> categories;
     private int publicationYear;
     private double price;
     @JsonManagedReference
-    private AuthorResponseDTO authorFullName;
+    private AuthorInBookResponseDTO authorFullName;
 }

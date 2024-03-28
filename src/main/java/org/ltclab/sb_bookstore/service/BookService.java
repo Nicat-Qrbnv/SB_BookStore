@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,24 +50,15 @@ public class BookService {
     //methods
     public BookResponseDTO createBook(BookRequestDTO bookRequestDTO) {
 
-        Author author = findAuthor(bookRequestDTO);
+        Author author = findAuthorOrCreate(bookRequestDTO);
         Book book = searchBook(bookRequestDTO, author);
         if (book == null) {
             book = mpr.map(bookRequestDTO, Book.class);
-            log.info(book.toString());
             book.setAuthor(author);
-            if (book.getPublicationYear() == 0) {
-                int foundYear = findPublicationYear(bookRequestDTO);
-                if (foundYear > 0) {
-                    book.setPublicationYear(foundYear);
-                } else {
-                    book.setPublicationYear(Year.now().getValue());
-                }
-            }
             book.setCategories(searchCategories(bookRequestDTO));
+            log.info(searchCategories(bookRequestDTO).toString());
             bookRepo.save(book);
         }
-
         return mpr.map(book, BookResponseDTO.class);
     }
 
@@ -90,7 +80,7 @@ public class BookService {
 
             book = mpr.map(newBook, Book.class);
             book.setId(id);
-            Author author = findAuthor(newBook);
+            Author author = findAuthorOrCreate(newBook);
             book.setAuthor(author);
             bookRepo.save(book);
         }
@@ -109,20 +99,26 @@ public class BookService {
 
     //helper methods
 
-    private Author findAuthor(BookRequestDTO bookRequestDTO) {
-        AuthorRequestDTO authorRequestDTO = bookRequestDTO.getAuthorRequestDTO();
-        return authorRepo.findByFullName(authorRequestDTO.getFullName());
+    private Author findAuthorOrCreate(BookRequestDTO bookRequestDTO) {
+        AuthorRequestDTO requestDTO = bookRequestDTO.getAuthorRequestDTO();
+        Author author = authorRepo.findByFullName(requestDTO.getFullName());
+        if (author == null) {
+            author = mpr.map(requestDTO, Author.class);
+            author = authorRepo.save(author);
+        }
+        return author;
     }
 
     private Book searchBook(BookRequestDTO bookRequestDTO, Author author) {
-        return bookRepo.findByTitleAndAuthor(bookRequestDTO.getTitle(), author).orElse(null);
+        return bookRepo.findBook(bookRequestDTO.getTitle(), author);
     }
 
     private List<Category> searchCategories(BookRequestDTO bookRequestDTO) {
         List<CategoryDTO> categoryDTOs = bookRequestDTO.getCategoryDTOs();
+        log.info("DTOs: " + categoryDTOs.toString());
         List<Category> categories = new ArrayList<>();
         mpr.map(categoryDTOs, categories);
-        categories.stream().filter(c -> !ctgryRepo.existsByCategoryName(c.getCategoryName())).forEach(ctgryRepo::save);
+//        categories.stream().filter(c -> !ctgryRepo.findCategory(c.getCategoryName())).forEach(ctgryRepo::save);
         return categories;
     }
 

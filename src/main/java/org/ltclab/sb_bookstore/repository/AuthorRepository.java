@@ -17,5 +17,5 @@ public interface AuthorRepository extends CrudRepository<Author, Long> {
     Author findByFullName(String fullName);
 
     @Override
-    void deleteById(Long aLong);
+    void deleteById(Long id);
 }

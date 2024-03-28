@@ -10,15 +10,13 @@ import org.hibernate.annotations.CascadeType;
 import java.util.List;
 
 @Entity
-@Table (name = "book",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"title", "author_id"}))
+@Table (name = "book")
 @Data
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column (unique = true)
     private String title;
     private int publicationYear;
     private double price;
