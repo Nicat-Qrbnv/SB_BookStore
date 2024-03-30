@@ -7,6 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface CategoryRepository extends CrudRepository<Category, Long> {
 
-    @Query("SELECT c FROM Category c WHERE c.categoryName = :name")
-    Category findCategory (@Param("name") String categoryName);
+    @Query("SELECT c FROM Category c WHERE c.categoryName = :categoryName")
+    Category findCategory (@Param("categoryName") String categoryName);
 }

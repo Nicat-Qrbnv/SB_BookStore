@@ -1,6 +1,5 @@
 package org.ltclab.sb_bookstore.controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.ltclab.sb_bookstore.dto.requestDTO.BookRequestDTO;
 import org.ltclab.sb_bookstore.dto.responseDTO.forBook.BookResponseDTO;
@@ -28,7 +27,7 @@ public class BookController {
         return bookSvc.getAllBooks();
     }
 
-    @GetMapping("/bk{id}")
+    @GetMapping("/{id}")
     public BookRequestDTO getBookById (@PathVariable Long id) {
         return bookSvc.getBook(id);
     }
@@ -39,13 +38,8 @@ public class BookController {
         return bookSvc.updateBook(id, newBook);
     }
 
-    @DeleteMapping("/delete{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
-        try {
-            String result = bookSvc.deleteBook(id).toString();
-            return ResponseEntity.ok(result);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @DeleteMapping("/{id}")
+    public void deleteBook(@PathVariable Long id) {
+        bookSvc.deleteBook(id);
     }
 }

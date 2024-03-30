@@ -21,4 +21,9 @@ public class Category {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Override
+    public String toString() {
+        return " [" + categoryName + "] ";
+    }
 }

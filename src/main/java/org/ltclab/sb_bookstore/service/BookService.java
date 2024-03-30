@@ -1,6 +1,5 @@
 package org.ltclab.sb_bookstore.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -64,20 +63,17 @@ public class BookService {
 
     public List<BookRequestDTO> getAllBooks() {
         List<Book> books = bookRepo.findAll();
-
         return books.stream().map(b -> mpr.map(b, BookRequestDTO.class)).toList();
     }
 
     public BookRequestDTO getBook(long id) {
-        Book book = bookRepo.findById(id).orElseThrow();
+        Book book = bookRepo.findBookById(id);
         return mpr.map(book, BookRequestDTO.class);
     }
 
     public BookRequestDTO updateBook(Long id, BookRequestDTO newBook) {
-
-        Book book = bookRepo.findById(id).orElse(null);
+        Book book = bookRepo.findBookById(id);
         if (book != null) {
-
             book = mpr.map(newBook, Book.class);
             book.setId(id);
             Author author = findAuthorOrCreate(newBook);
@@ -87,18 +83,11 @@ public class BookService {
         return mpr.map(book, BookRequestDTO.class);
     }
 
-    public BookRequestDTO deleteBook(Long id) {
-        Book book = bookRepo.findById(id).orElse(null);
-        if (book != null) {
-            bookRepo.delete(book);
-            return mpr.map(book, BookRequestDTO.class);
-        } else {
-            throw new EntityNotFoundException("Book does not exist!");
-        }
+    public void deleteBook(Long id) {
+        bookRepo.deleteById(id);
     }
 
     //helper methods
-
     private Author findAuthorOrCreate(BookRequestDTO bookRequestDTO) {
         AuthorRequestDTO requestDTO = bookRequestDTO.getAuthorRequestDTO();
         Author author = authorRepo.findByFullName(requestDTO.getFullName());
@@ -115,10 +104,17 @@ public class BookService {
 
     private List<Category> searchCategories(BookRequestDTO bookRequestDTO) {
         List<CategoryDTO> categoryDTOs = bookRequestDTO.getCategoryDTOs();
-        log.info("DTOs: " + categoryDTOs.toString());
-        List<Category> categories = new ArrayList<>();
-        mpr.map(categoryDTOs, categories);
-//        categories.stream().filter(c -> !ctgryRepo.findCategory(c.getCategoryName())).forEach(ctgryRepo::save);
+        log.info("DTOs: " + categoryDTOs);
+        List<Category> categories = categoryDTOs.stream().map(c -> mpr.map(c, Category.class)).toList();
+        log.info("entities: " + categories);
+        for (Category c : categories) {
+            Category cat = ctgryRepo.findCategory(c.getCategoryName());
+            if (cat != null) {
+                c.setId(cat.getId());
+            } else {
+                ctgryRepo.save(c);
+            }
+        }
         return categories;
     }
 
@@ -130,7 +126,6 @@ public class BookService {
     }
 
     private int findPublicationYear(BookRequestDTO bookDTO) {
-
         BookResponseDTO bookResponseDTO = grc.searchBookInGoodReads(HOST, KEY, bookDTO.getTitle()).get(0);
         if (bookResponseDTO != null) {
             return bookResponseDTO.getPublicationYear();

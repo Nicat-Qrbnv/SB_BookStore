@@ -3,7 +3,6 @@ package org.ltclab.sb_bookstore.dto.responseDTO.forBook;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import org.ltclab.sb_bookstore.dto.CategoryDTO;
-import org.ltclab.sb_bookstore.dto.responseDTO.forAuthor.AuthorResponseDTO;
 
 import java.util.List;
 

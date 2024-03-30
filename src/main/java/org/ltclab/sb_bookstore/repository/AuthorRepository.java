@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface AuthorRepository extends CrudRepository<Author, Long> {
+
     @Override
     List<Author> findAll();
 
